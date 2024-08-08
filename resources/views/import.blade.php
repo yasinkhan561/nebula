@@ -35,7 +35,7 @@
                                 </div>
                                 @endif
 
-                                <form action="{{ route('import.excel') }}" method="POST" enctype="multipart/form-data">
+                                <form action="{{ route('issues.import.process') }}" method="POST" enctype="multipart/form-data">
                                     @csrf
 
                                     <div class="mb-4">

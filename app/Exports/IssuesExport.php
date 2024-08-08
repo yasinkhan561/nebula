@@ -10,20 +10,28 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 
 class IssuesExport implements FromCollection, WithMapping, WithHeadings
 {
-    protected $website;
+    protected $website_id;
+    protected $sortBy;
+    protected $sortOrder;
 
     public function __construct($request)
     {
-        $this->website = $request->website;
+        $this->website_id = $request->website_id;
+        $this->sortBy = $request->exportSortBy;
+        $this->sortOrder = $request->exportSortOrder;
+
     }
 
     public function collection()
     {
 
-        $query = Issue::query();
+        $query = Issue::query()->with(['website','status']);
 
-        if ($this->website !== null) {
-            $query->where('website', $this->website);
+        if ($this->website_id !== null) {
+            $query->where('website_id', $this->website_id);
+        }
+        if ($this->sortBy !== null && $this->sortOrder !== null) {
+            $query->orderBy($this->sortBy, $this->sortOrder);
         }
 
         return $query->get();
@@ -38,6 +46,7 @@ class IssuesExport implements FromCollection, WithMapping, WithHeadings
             'Url',
             'Issue Link',
             'Description',
+            'Status',
             'Criterion',
             'Issue Reference',
             'Element',
@@ -55,12 +64,13 @@ class IssuesExport implements FromCollection, WithMapping, WithHeadings
     public function map($Issue): array
     {
         return [
-            $Issue->website,
+            $Issue->website->title,
             $Issue->batch,
             $Issue->page,
             $Issue->url,
             $Issue->issue_link,
             $Issue->description,
+            $Issue->status->status,
             $Issue->criterion,
             $Issue->issue_reference,
             $Issue->element,

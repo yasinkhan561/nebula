@@ -4,7 +4,7 @@
 <div class="panel">
     <div class="panel-heading bord-btm clearfix pad-all h-100">
         <div class="pull-left clearfix">
-            <div class="text-lg box-inline mar-hor">{{$tool->name}} Results</div>
+        <div class="text-lg box-inline mar-hor">{{$tool->name}} Results</div>
             <div class="form-inline box-inline">
                 <label for="perPage">Show</label>
                 <select class="form-control" id="perPage" onchange="sort_orders()">
@@ -17,11 +17,10 @@
             </div>
         </div>
         <div class="box-inline mar-lft">
-                    <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#bulk-status-update">Bulk Status Update</button>
-                </div>
+            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#bulk-status-update">Bulk Status Update</button>
+        </div>
         <div class="pull-right clearfix">
-               
-            <form id="sort_orders" action="{{ route('issues.export') }}" method="GET">
+            <form id="sort_orders" action="{{ route('violations.export') }}" method="GET">
                 <div class="box-inline pad-rgt pull-left">
                     <div class="select" style="min-width: 300px;">
                         <select class="form-control demo-select2" name="website_id" id="website_id" onchange="sort_orders()">
@@ -37,54 +36,49 @@
                 <div class="box-inline pad-rgt pull-left">
                     <button type="submit" class="btn btn-primary">Export Results</button>
                 </div>
+
             </form>
         </div>
     </div>
     <div class="panel-body">
-        <table class="table table-striped res-table mar-no" cellspacing="0" width="100%">
+        <table class="table table-striped res-table mar-no pad-no" cellspacing="0" width="100%">
             <thead>
                 <tr>
-                    <th>Select</th>
-                    <th class="clickable"><span  onclick="sortTable('website_id')">Website <i class="sort-icon" id="sort-website_id"></i></span></th>
-                    <th class="clickable"><span  onclick="sortTable('batch')">Batch <i class="sort-icon" id="sort-batch"></i></span></th>
-                    <th class="clickable" style="width:15%"><span  onclick="sortTable('page')">Page <i class="sort-icon" id="sort-page"></i></span></th>
-                    <th class="clickable" style="width:15%"><span  onclick="sortTable('issue_reference')">Issue <i class="sort-icon" id="sort-page"></i></span></th>
-                    <th class="clickable"><span  onclick="sortTable('description')">Description <i class="sort-icon" id="sort-description"></i></span></th>
-                    <th class="clickable"><span  onclick="sortTable('status_id')">Status <i class="sort-icon" id="sort-status_id"></i></span></th>
-                    <th>Criterion</th>
-                    <th>Element</th>
-                    <th>Complexity</th>
-                    <th>Severity</th>
-                    <th>Check Type</th>
-                    <th>Responsibility</th>
-                    <th>Date</th>
+                <th >Select</th>
+                <th class="clickable"><span  onclick="sortTable('website_id')">Website <i class="sort-icon" id="sort-website_id"></i></span></th>
+                <th class="clickable"><span  onclick="sortTable('batch')">Batch <i class="sort-icon" id="sort-batch"></i></span></th>
+                <th class="clickable"><span  onclick="sortTable('page_id')">Page <i class="sort-icon" id="sort-page_id"></i></span></th>
+                <th class="clickable"><span  onclick="sortTable('violation')">Violation <i class="sort-icon" id="sort-violation"></i></span></th>
+                <th class="clickable"><span  onclick="sortTable('description')">Description <i class="sort-icon" id="sort-description"></i></span></th>
+                <th class="clickable"><span  onclick="sortTable('status_id')">Status <i class="sort-icon" id="sort-status_id"></i></span></th>
+                <th class="clickable"><span  onclick="sortTable('impact')">Impact <i class="sort-icon" id="sort-impact"></i></span></th>
+                <th>Tags</th>
+                <th class="clickable"><span  onclick="sortTable('created_at')">Date <i class="sort-icon" id="sort-created_at"></i></span></th>
                 </tr>
             </thead>
-            <tbody id="issues-table">
+            <tbody id="violations-table">
             </tbody>
         </table>
         <div class="clearfix">
             <div class="pull-right" id="pagination-links">
+
             </div>
         </div>
     </div>
 </div>
-
-
-
-<div class="modal fade" id="bulk-status-update" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="bulk-status-update" tabindex="-1" role="dialog" aria-labelledby="bulkStatusUpdate" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
         <form >
             <div class="modal-header">
-                <h4 class="modal-title" id="myModalLabel">Bulk Status Update</h4>
+                <h4 class="modal-title" id="bulkStatusUpdate">Bulk Status Update</h4>
             </div>
 
             <div class="modal-body" style="min-height:300px">
            
                 <div class="pad-hor">
                     <div class="select"  style="width:100%">
-                        <select class="form-control demo-select2" name="bulkStatusId" id="bulkStatusId" >
+                        <select class="form-control demo-select2" name="bulkStatusId" id="bulkStatusId">
                             <option value="">choose status</option>
                             @foreach($statuses as $status)
                                 <option value="{{ $status->id }}">{{ $status->status }}</option>
@@ -92,7 +86,6 @@
                         </select>
                     </div>
                 </div>
-              
             
             </div>
 
@@ -106,8 +99,6 @@
 </div>
 @endsection
 
-
-
 @section('script')
 <script type="text/javascript">
     let currentPage = 1;
@@ -119,7 +110,7 @@
         const perPage = document.getElementById('perPage').value;
 
         $.ajax({
-            url: "{{ route('issues.index') }}",
+            url: "{{ route('violations.index') }}",
             type: "GET",
             data: {
                 website_id: website_id,
@@ -129,8 +120,8 @@
                 page: currentPage
             },
             success: function(response) {
-                updateTable(response.issues.data, response.statuses);
-                updatePagination(response.issues);
+                updateTable(response.violations.data, response.statuses);
+                updatePagination(response.violations);
                 updateSortIcons();
             },
             error: function(xhr, status, error) {
@@ -139,10 +130,11 @@
         });
     }
 
+
+
     function sortTable(column) {
-        console.log(column);
         if (currentSortBy === column) {
-            currentSortOrder = currentSortOrder === 'asc' ? 'desc' : 'asc'; 
+            currentSortOrder = currentSortOrder === 'asc' ? 'desc' : 'asc';
         } else {
             currentSortOrder = 'asc';
         }
@@ -164,52 +156,55 @@
         }
     }
 
-    function updateTable(issues, statuses) {
-       
+
+
+
+
+
+    function updateTable(violations, statuses) {
         let rows = '';
-        if (issues.length === 0) {
+        if (violations.length === 0) {
             rows = `
                 <tr>
-                    <td colspan="14" class="dataTables_empty">No data available in table</td>
+                    <td colspan="9" class="dataTables_empty">No data available in table</td>
                 </tr>
             `;
         } else {
-            issues.forEach(issue => {
 
-                
+
+            violations.forEach(violation => {
+
                 let statusOptions = '';
                 statuses.forEach(status => {
                     statusOptions += `
-                        <option value="${status.id}" ${status.id == issue.status_id ? 'selected' : ''}>${status.status}</option>
+                        <option value="${status.id}" ${status.id == violation.status_id ? 'selected' : ''}>${status.status}</option>
                     `;
                 });
 
-              
+
+
+
                 rows += `
-                    <tr>
-                        <td><input type="checkbox" name="selected_issues[]" value="${issue.id}"></td>
-                        <td>${issue.website.title}</td>
-                        <td>${issue.batch}</td>
-                        <td><a href="${issue.url}">${issue.page}</a></td>
-                        <td><a href="${issue.issue_link}">${issue.issue_reference}</a></td>
-                        <td>${issue.description}</td>
+                <tr>
+                        <td><input type="checkbox" name="selected_issues[]" value="${violation.id}"></td>
+                        <td>${violation.page?.website ? violation.page.website.title : 'N/A'}</td>
+                        <td>${violation.page?.batch}</td>
+                        <td><a href="${violation.page?.url}">View Page</a></td>
+                        <td>${violation.violation}</td>
+                        <td>${violation.description}</td>
                          <td>
-                            <select class="form-control status-dropdown" data-issue-id="${issue.id}" onchange="updateStatus(this.getAttribute('data-issue-id'), this.value)">
+                            <select class="form-control status-dropdown" data-issue-id="${violation.id}" onchange="updateViolationStatus(this.getAttribute('data-issue-id'), this.value)">
                                ${statusOptions}
                             </select>
                         </td>
-                        <td>${issue.criterion}</td>
-                        <td>${issue.element}</td>
-                        <td>${issue.complexity}</td>
-                        <td>${issue.severity}</td>
-                        <td>${issue.check_type}</td>
-                        <td>${issue.responsibility}</td>
-                        <td>${new Date(issue.date).toLocaleDateString()}</td>
+                        <td>${violation.impact}</td>
+                        <td>${JSON.parse(violation.tags || '[]').join(",")}</td>
+                        <td>${violation.page?.scan_time}</td>
                     </tr>
                 `;
             });
         }
-        document.getElementById('issues-table').innerHTML = rows;
+        document.getElementById('violations-table').innerHTML = rows;
     }
 
     function updatePagination(pagination) {
@@ -249,14 +244,14 @@
     }
 
 
-    function updateStatus(issueId, statusId) {
-        console.log(issueId, statusId);
+    function updateViolationStatus(violationId, statusId) {
+     
         $.ajax({
-            url: "{{ route('issues.updateStatus') }}",
+            url: "{{ route('violations.updateStatus') }}",
             type: "POST",
             data: {
                 _token: $('meta[name="csrf-token"]').attr('content'),
-                issueId: issueId,
+                violationId: violationId,
                 statusId: statusId,
             },
             success: function(response) {
@@ -271,54 +266,51 @@
         });
     }
 
-
-
-
     function changePage(page) {
         currentPage = page;
         sort_orders();
     }
     $(document).ready(function() {
-        sort_orders();
-    });
+    sort_orders();
+});
 
 
-
-
-    function bulkStatusUpdate() {
-
+function bulkStatusUpdate() {
        
-       
-        var statusId = $('#bulkStatusId').val();
-        var issueIds = $('input[name="selected_issues[]"]:checked').map(function(){
-            return $(this).val();
-        }).get();
-         
-        $('#bulk-status-update').modal('hide');
-        $('#bulkStatusId').val('');
-         if(issueIds.length == 0){
-            showAlert("danger", 'Please select atleast one issue!');
-            return;
-         }
+var statusId = $('#bulkStatusId').val();
+var issueIds = $('input[name="selected_issues[]"]:checked').map(function(){
+    return $(this).val();
+}).get();
 
-        $.ajax({
-            url: "{{ route('issues.bulkUpdate') }}",
-            type: "POST",
-            data: {
-                _token: $('meta[name="csrf-token"]').attr('content'),
-                issueIds,
-                statusId,
-            },
-            success: function(response) {
-                if(response){
-                    sort_orders();
-                    showAlert("success", 'Status updated successfully!');
-                }
-            },
-            error: function(xhr, status, error) {
-                showAlert("danger", 'something went wrong!');
-            }
-        });
+
+ 
+ if(issueIds.length == 0){
+    showAlert("danger", 'Please select atleast one issue!');
+    return;
+ }
+
+ $('#bulk-status-update').modal('hide');
+ $('#bulkStatusId').val('');
+
+$.ajax({
+    url: "{{ route('violations.bulkUpdate') }}",
+    type: "POST",
+    data: {
+        _token: $('meta[name="csrf-token"]').attr('content'),
+        issueIds,
+        statusId,
+    },
+    success: function(response) {
+        if(response){
+            sort_orders();
+            showAlert("success", 'Status updated successfully!');
+        }
+    },
+    error: function(xhr, status, error) {
+        showAlert("danger", 'something went wrong!');
     }
+});
+ }
+</script>
 </script>
 @endsection

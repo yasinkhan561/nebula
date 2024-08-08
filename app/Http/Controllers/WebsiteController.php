@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Website;
+use App\Models\Tool;
 
 class WebsiteController extends Controller
 {
@@ -11,7 +12,8 @@ class WebsiteController extends Controller
     public function index()
     {
         $websites = Website::all();
-        return view('websites.index', compact('websites'));
+        $tools = Tool::all();
+        return view('websites.index', compact('websites','tools'));
     }
 
      // Show the form for creating a new website
@@ -25,9 +27,13 @@ class WebsiteController extends Controller
      {
        
         $request->validate([
+            'tool_id' => 'required|integer',
             'title' => 'required|string|max:255',
             'url' => 'nullable|string|url|max:255',
+
+
         ], [
+            'tool_id.required' => 'The tool field is required.',
             'title.required' => 'The title field is required.',
             'title.string' => 'The title must be a string.',
             'title.max' => 'The title may not be greater than 255 characters.',

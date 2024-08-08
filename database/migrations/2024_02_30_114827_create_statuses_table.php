@@ -11,11 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('websites', function (Blueprint $table) {
+        Schema::create('statuses', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('tool_id');
-            $table->string('title')->nullable();
-            $table->string('url')->nullable();
+            $table->string("status");
             $table->timestamps();
         });
     }
@@ -25,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('websites');
+        Schema::dropIfExists('statuses');
     }
 };

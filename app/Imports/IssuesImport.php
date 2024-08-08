@@ -1,70 +1,126 @@
 <?php
 
 namespace App\Imports;
-
-
+use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
+use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Events\BeforeImport;
+use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
+use App\Models\Issue;
 
-use App\Models\Issues;
-
-class IssuesImport implements ToModel, WithHeadingRow, WithValidation
+class IssuesImport implements ToModel, WithMultipleSheets, WithHeadingRow, WithValidation, WithMapping, WithEvents
 {
     protected $website;
+    protected $hyperlinks;
+    protected $fileName;
+    protected $filePath;
+    protected $rowIndex;
 
-    public function __construct($website)
+    public function __construct($website, $file)
     {
-        $this->website = $website->website;
+        $this->website = $website;
+        $this->fileName = $file[0];
+        $this->filePath = $file[1];
+        $this->hyperlinks = [];
+        $this->rowIndex = 5;
+    }
+
+    public function sheets(): array
+    {
+        return [
+            'Page issues' => $this,
+        ];
+    }
+
+    public function headingRow(): int
+    {
+        return 4;
+    }
+
+    public function map($row): array
+    {
+        $rowIndex = $this->rowIndex++;
+        $issueLink = $this->hyperlinks[$rowIndex];
+        // echo "Processing row: {$rowIndex}, Issue Value:{$row['issue_link']} Issue link: {$row['page_url']}<br>";
+        // // echo "<pre>";
+        // // print_r($row);
+        $timestamp = Carbon::now();
+
+        return [
+            'website_id' => $this->website,
+            'batch' => $this->getBatchNumber(),
+            'page' => $row['page'],
+            'url' => $row['page_url'],
+            'issue_link' => $issueLink,
+            'issue_reference' => $row['issue_link'],
+            'description' => $row['description'],
+            'criterion' => $row['criterion'],
+            'element' => $row['element'],
+            'check_type' => $row['check_type'],
+            'responsibility' => $row['responsibility'],
+            'severity' => $row['severity'],
+            'complexity' => $row['complexity'],
+            'date' => $timestamp,
+        ];
     }
 
     public function model(array $row)
     {
-        // print_r($row);
-        // echo "<br>";
-        // print_r('website: ' .  $this->website);echo "<br>";
-        // print_r('Batch: ' . $row['batch']);echo "<br>";
-        // print_r('Page: ' . $row['page']);echo "<br>";
-        // print_r('url: ' . $row['url']);echo "<br>";
-        // print_r('issue_link: ' . $row['issue_link']);echo "<br>";
-        // print_r('description: ' . $row['description']);echo "<br>";
-        // print_r('criterion: ' . $row['criterion']);echo "<br>";
-        // print_r('issue_reference: ' . $row['issue_reference']);echo "<br>";
-        // print_r('element: ' . $row['element']);echo "<br>";
-        // print_r('check_type: ' . $row['check_type']);echo "<br>";
-        // print_r('responsibility: ' . $row['responsibility']);echo "<br>";
-        // print_r('severity: ' . $row['severity']);echo "<br>";
+        if (empty(array_filter($row))) {
+            return null;
+        }
 
-       
-
-        return new Issues([
-
-           'website'     => $this->website,
-           'batch'    => $row['batch'],
-           'page'    => $row['page'],
-           'url'    => $row['url'],
-           'issue_link'    => $row['issue_link'],
-           'description'    => $row['description'],
-           'criterion'    => $row['criterion'],
-           'issue_reference'    => $row['issue_reference'],
-           'element'    => $row['element'],
-           'check_type'    => $row['check_type'],
-           'responsibility'    => $row['responsibility'],
-           'severity'    => $row['severity'],
-           'complexity' => $row['complexity'],
-           'date' => $row['date'],
- 
-        ]);
+         return new Issue($row);
     }
 
     public function rules(): array
-{
-    return [
-        'website' => function ($attribute, $value, $onFailure) {
-            if (is_null($value)) { // Use is_null with parentheses
-                $onFailure('Website cannot be null');
-            }
+    {
+        return [
+            'website' => function ($attribute, $value, $onFailure) {
+                if (is_null($value)) {
+                    $onFailure('Website cannot be null');
+                }
+            },
+        ];
+    }
+
+    public function beforeImport(BeforeImport $event)
+    {
+        
+        $reader = new Xlsx();
+        $spreadsheet = $reader->load($this->filePath);
+
+        $worksheet = $spreadsheet->getSheetByName('Page issues');
+        $highestRow = $worksheet->getHighestRow();
+
+        for ($row = 5; $row <= $highestRow; $row++) {
+            $cellAddress = "A{$row}";
+            $cell = $worksheet->getCell($cellAddress);
+
+            //  echo "Processing cell: {$cellAddress}, Value: {$cell->getValue()}<br>";
+
+            if ($cell->hasHyperlink() && !$cell->getHyperlink()->isInternal()) {
+                // echo "Cell {$cellAddress} has a hyperlink: {$cell->getHyperlink()->getUrl()}<br>";
+
+                $this->hyperlinks[$row] = $cell->getHyperlink()->getUrl();
+            } 
         }
-    ];
-}
+    }
+
+
+    public function registerEvents(): array
+    {
+        return [
+            BeforeImport::class => [$this, 'beforeImport'],
+        ];
+    }
+
+    protected function getBatchNumber(): string
+    {
+        return explode(".xlsx", explode("Batch", $this->fileName)[1])[0];
+    }
 }

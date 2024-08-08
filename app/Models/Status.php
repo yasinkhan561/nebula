@@ -4,23 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Tool;
 
-class Website extends Model
+class Status extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'tool_id',
-        'title',
-        'url',
+        'status',
     ];
-
-
-public function tool()
-{
-    return $this->belongsTo(Tool::class, 'tool_id');
-}
-
-
-
 }

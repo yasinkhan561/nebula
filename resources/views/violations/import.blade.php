@@ -19,7 +19,7 @@
             <h1 class="panel-title"><strong>Import {{$tool->name}} Results</strong></h1>
         </div>
         <div class="panel-body">
-            <form class="form-horizontal" action="{{ route('issues.import.process') }}" method="POST" enctype="multipart/form-data">
+            <form class="form-horizontal" action="{{ route('violations.import.process') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 
                 <div class="select form-group" >
