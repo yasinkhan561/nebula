@@ -33,7 +33,7 @@ If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Lar
 
 To clone and set up the project, follow these steps:
 
-1. Clone the repository: `git clone https://github.com/your-username/your-project.git`
+1. Clone the repository: `git clone https://github.com/yasinkhan561/nebula.git`
 2. Navigate to the project directory: `cd your-project`
 3. Install the project dependencies: `composer install`
 4. Create a copy of the `.env.example` file and rename it to `.env`
@@ -48,16 +48,16 @@ You should now be able to access your Laravel project at `http://localhost:8000`
 
 To deploy your Laravel project to a server, you can follow these steps:
 
-Set up a web server (e.g., Apache or Nginx) and configure it to point to your project's public directory.
-Copy your project files to the server using a file transfer protocol (e.g., FTP or SCP).
-SSH into the server and navigate to the project directory.
-Install the project dependencies by running composer install --no-dev.
-Create a copy of the .env.example file and rename it to .env.
-Generate an application key by running php artisan key:generate.
-Configure the database connection in the .env file.
-Run the database migrations by executing php artisan migrate.
-Optionally, seed the database with initial data by running php artisan db:seed.
-Set the appropriate file permissions for the storage and cache directories.
-Restart the web server to apply the changes.
-Test your deployed Laravel application by accessing its URL in a web browser.
-Remember to update the necessary configuration settings (e.g., database credentials) in the .env file to match your server environment.
+1. Set up a web server (e.g., Apache or Nginx) and configure it to point to your project's public directory.
+2. Copy your project files to the server using a file transfer protocol (e.g., FTP or SCP).
+3. SSH into the server and navigate to the project directory.
+4. Install the project dependencies by running composer install --no-dev.
+5. Create a copy of the .env.example file and rename it to .env.
+6. Generate an application key by running php artisan key:generate.
+7. Configure the database connection in the .env file.
+8. Run the database migrations by executing php artisan migrate.
+9. Optionally, seed the database with initial data by running php artisan db:seed.
+10. Set the appropriate file permissions for the storage and cache directories.
+11. Restart the web server to apply the changes.
+12. Test your deployed Laravel application by accessing its URL in a web browser.
+13. Remember to update the necessary configuration settings (e.g., database credentials) in the .env file to match your server environment.
