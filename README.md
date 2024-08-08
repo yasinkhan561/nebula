@@ -1,4 +1,5 @@
 ## Nebula
+
 Nebula is a robust project built with Laravel 10, designed to handle the import and processing of Excel and JSON files. The primary functionality of Nebula includes:
 
 - Data Import: Seamlessly import data from Excel and JSON files.
@@ -6,7 +7,6 @@ Nebula is a robust project built with Laravel 10, designed to handle the import 
 - Data Filtering: Provide advanced filters to organize and sort the data in a useful order.
 - Data Export: Export the filtered and organized data in the same order, ensuring consistency and ease of use.
 
-  
 Nebula leverages the powerful features of Laravel 10 to deliver a smooth and efficient data management experience. Whether you need to handle large datasets or require precise data organization, Nebula is equipped to meet your needs.
 
 ## About Laravel
@@ -41,7 +41,7 @@ To clone and set up the project, follow these steps:
 4. Create a copy of the `.env.example` file and rename it to `.env`
 5. Generate an application key: `php artisan key:generate`
 6. Configure the database connection in the `.env` file
-7. Run the database migrations: `php artisan migrate`
+7. Run the database migrations: `php artisan migrate` or import the db.sql file from database folder
 8. Start the development server: `php artisan serve`
 
 You should now be able to access your Laravel project at `http://localhost:8000`.
